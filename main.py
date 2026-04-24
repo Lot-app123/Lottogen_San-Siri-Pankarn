@@ -61,7 +61,7 @@ CurrentUser = Annotated[str, Depends(get_current_user)]
 @lru_cache(maxsize=1)
 def _load_bg() -> Image.Image:
     """โหลดภาพพื้นหลังครั้งเดียว แล้ว cache ไว้ใน RAM"""
-    return Image.open("static/Baan.jpg").convert("RGBA")
+    return Image.open("static/Baan Demo.png").convert("RGBA")
 
 
 @lru_cache(maxsize=8)
