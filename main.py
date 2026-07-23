@@ -1,12 +1,3 @@
-"""
-Lottery Image Generator — FastAPI Edition
-ปรับปรุงจาก Flask เดิม:
-  - FastAPI + Jinja2 (async, เร็วกว่า Flask ~2-3x)
-  - In-memory image & ZIP (ไม่เซฟลง disk เลย → เหมาะ Render/Railway/Fly.io)
-  - Image/font cache ที่ startup (โหลดครั้งเดียว)
-  - JWT-based session แทน Flask-Login
-"""
-
 import io
 import random
 import zipfile
@@ -22,6 +13,7 @@ from fastapi.templating import Jinja2Templates
 from jose import JWTError, jwt
 from PIL import Image, ImageDraw, ImageFont
 from zoneinfo import ZoneInfo
+from typing import Annotated, Optional
 
 # ─── App setup ───────────────────────────────────────────────────────────────
 
@@ -43,7 +35,8 @@ def create_token(username: str) -> str:
     return jwt.encode({"sub": username, "exp": expire}, SECRET_KEY, algorithm=ALGORITHM)
 
 
-def get_current_user(token: str | None = Cookie(default=None, alias="access_token")) -> str:
+# แก้บรรทัดนี้:
+def get_current_user(token: Optional[str] = Cookie(default=None, alias="access_token")) -> str:
     if not token:
         raise HTTPException(status_code=status.HTTP_307_TEMPORARY_REDIRECT, headers={"Location": "/login"})
     try:
@@ -61,29 +54,27 @@ CurrentUser = Annotated[str, Depends(get_current_user)]
 @lru_cache(maxsize=1)
 def _load_bg() -> Image.Image:
     """โหลดภาพพื้นหลังครั้งเดียว แล้ว cache ไว้ใน RAM"""
-    return Image.open("static/Baan Demo.png").convert("RGBA")
+    return Image.open("static/Baan.png").convert("RGBA")
 
 
-@lru_cache(maxsize=8)
-def _load_font(size: int) -> ImageFont.FreeTypeFont:
-    """Cache แต่ละขนาด font แยกกัน"""
-    return ImageFont.truetype("static/SURATANADEMO-ExtraBold.ttf", size)
+@lru_cache(maxsize=16) # เพิ่มขนาด cache เผื่อโหลดหลายฟอนต์
+def _load_font(size: int, font_path: str = "static/Opun Mai Bold.ttf") -> ImageFont.FreeTypeFont:
+    """Cache แต่ละขนาดและไฟล์ฟอนต์แยกกัน (ค่าเริ่มต้นคือ COOOPBL สำหรับตัวเลข)"""
+    return ImageFont.truetype(font_path, size)
 
-
-# ─── Image generation (ไม่แตะ disk เลย) ─────────────────────────────────────
 
 def _get_auto_font(draw: ImageDraw.ImageDraw, text: str, max_width: int,
-                   start: int = 50, min_size: int = 20) -> ImageFont.FreeTypeFont:
+                   start: int = 55, min_size: int = 20, 
+                   font_path: str = "static/Opun Mai Bold.ttf") -> ImageFont.FreeTypeFont:
     for size in range(start, min_size - 1, -1):
-        font = _load_font(size)
+        font = _load_font(size, font_path)
         w = draw.textbbox((0, 0), text, font=font)[2]
         if w <= max_width:
             return font
-    return _load_font(min_size)
-
+    return _load_font(min_size, font_path)
 
 def _bold_text(draw: ImageDraw.ImageDraw, xy: tuple[int, int], text: str,
-               font: ImageFont.FreeTypeFont, fill: str = "#ffca08", boldness: int = 1) -> None:
+               font: ImageFont.FreeTypeFont, fill: str = "#ffffff", boldness: int = 1) -> None:
     x, y = xy
     for dx in range(-boldness, boldness + 1):
         for dy in range(-boldness, boldness + 1):
@@ -100,14 +91,17 @@ def create_image_bytes(lottery_type: str) -> bytes:
     draw  = ImageDraw.Draw(image)
 
     # วันที่ปัจจุบัน
-    date_text = datetime.now(ZoneInfo("Asia/Bangkok")).strftime("%d.%m.%y")
-    draw.text((190, 50), date_text, font=_load_font(30), fill="#ffca08")
+    now = datetime.now(ZoneInfo("Asia/Bangkok"))
+    thai_year = now.year + 543
+    date_text = f"{now.strftime('%d %m')} {str(thai_year)[-2:]}"
+    draw.text((280, 552), date_text, font=_load_font(25), fill="#ffffff",stroke_width=2, stroke_fill="#000000")
 
     # ชื่อประเภทหวย (auto-fit)
-    font_auto = _get_auto_font(draw, lottery_type, image.width - 100)
-    bbox = draw.textbbox((0, 0), lottery_type, font=font_auto)
-    x_pos = (image.width - (bbox[2] - bbox[0])) // 2
-    _bold_text(draw, (x_pos, 110), lottery_type, font_auto)
+    text_font_path = "static/Mitr-Regular.ttf"
+    font_auto = _get_auto_font(draw, lottery_type, image.width - 100 ,font_path = text_font_path)
+    text_width = draw.textlength(lottery_type, font=font_auto)
+    x_pos = (image.width - text_width) // 2
+    draw.text((x_pos, 105), lottery_type, font=font_auto, fill="#ffffff",stroke_width=3, stroke_fill="#000000")
 
     # ─── สุ่มเลข ───────────────────────────────────────────────────────────
     num1, num2 = random.sample(range(10), 2)
@@ -130,19 +124,20 @@ def create_image_bytes(lottery_type: str) -> bytes:
     random.shuffle(six)
     random_6 = "".join(map(str, six))
 
-    # ─── วาดผลลัพธ์ ────────────────────────────────────────────────────────
-    f_large  = _load_font(75)
-    f_medium = _load_font(60)
-    f_small  = _load_font(50)
+   
+    f_large  = _load_font(70)
+    f_medium = _load_font(50)
+    f_small  = _load_font(45)
 
-    _bold_text(draw, (160, 190), f"{num1} - {num2}", f_large)
+    #_bold_text((160, 190), f"{num1} - {num2}", f_large)#
+    draw.text((199, 200), f"{num1}          {num2}", font = f_large, fill="#ffffff",stroke_width=4, stroke_fill="#000000") 
     for i, val in enumerate(tens):
-        _bold_text(draw, (120 + i * 90, 320), val, f_medium)
+        draw.text((150 + i * 170, 305), val, font = f_medium, fill="#ffffff",stroke_width=4, stroke_fill="#000000")
     for i, val in enumerate(units):
-        _bold_text(draw, (120 + i * 90, 430), val, f_medium)
-    _bold_text(draw, (55, 520), f"วิน.{random_6}", f_small)
+        draw.text((150 + i * 170, 385), val, font = f_medium, fill="#ffffff",stroke_width=4, stroke_fill="#000000")
+    draw.text((315, 468), f"{random_6}", font = f_small, fill="#ffffff",stroke_width=3, stroke_fill="#000000")
 
-    # ─── คืนค่าเป็น bytes (ไม่เซฟไฟล์) ────────────────────────────────────
+    
     buf = io.BytesIO()
     image.save(buf, format="JPEG", quality=85, optimize=True)
     buf.seek(0)
