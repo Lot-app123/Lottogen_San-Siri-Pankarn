@@ -412,8 +412,7 @@ header {
 
   <div class="set-tabs" id="set-tabs">
     <div class="set-tab active" data-set="0" onclick="switchSet(0)">SET<br class="desktop-br"> 1</div>
-    <div class="set-tab" data-set="1" onclick="switchSet(1)">SET<br class="desktop-br"> 2</div>
-    <div class="set-tab" data-set="2" onclick="switchSet(2)">ส-อ</div>
+    <div class="set-tab" data-set="1" onclick="switchSet(1)">ส-อ</div>
     
     <button type="button" class="preview-toggle-btn" id="preview-toggle-btn" onclick="togglePreview()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -493,15 +492,6 @@ const SETS = [
       { name: 'ดาวโจนส์',            time: '04:00' },
       { name: 'ดาวโจนส์ VIP',        time: '04:00' },
       { name: 'ดาวโจนส์ STAR',       time: '04:30' },
-    ]
-  },
-  {
-    label: 'SET 2',
-    items: [
-      { name: 'ธกส',       time: '' },
-      { name: 'ออมสิน',    time: '' },
-      { name: 'ไทย',       time: '' },
-      { name: 'รัฐบาลไทย', time: '' },
     ]
   },
   {
@@ -649,9 +639,9 @@ function switchSet(idx) {
   document.querySelectorAll('.set-tab').forEach((t, i) => {
     t.classList.toggle('active', i === idx);
     // อัปเดตให้รองรับหน้าจอ iPad (<= 1024px)
-    if(idx === i && window.innerWidth <= 1024 && i !== 2) {
+    if(idx === i && window.innerWidth <= 1024 && i !== 1) {
       t.innerHTML = `SET ${i+1}`; 
-    } else if (i !== 2) {
+    } else if (i !== 1) {
       t.innerHTML = `SET<br class="desktop-br"> ${i+1}`;
     }
   });
