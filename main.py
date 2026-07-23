@@ -27,7 +27,7 @@ SECRET_KEY = "change-me-before-deploy-use-openssl-rand-hex-32"
 ALGORITHM  = "HS256"
 TOKEN_EXPIRE_HOURS = 8
 
-USERS = {"admin": "1234"}  # TODO: ใช้ DB + bcrypt จริง ๆ ใน production
+USERS = {"Sansiri": "1234"}  # TODO: ใช้ DB + bcrypt จริง ๆ ใน production
 
 
 def create_token(username: str) -> str:
