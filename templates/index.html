@@ -543,7 +543,7 @@ const SETS = [
       { name: 'ฮานอยดึก',               time: '23:00' },
       { name: 'เยอรมัน VIP',             time: '22:30' },
       { name: 'ยูโร',                    time: '23:30' },
-      { name: 'หวยลาวกาชาด',             time: '23:00' },
+      { name: 'หวยลาวกาขาด',             time: '23:00' },
       { name: 'รัสเซีย VIP',             time: '23:30' },
     ]
   }
@@ -603,7 +603,7 @@ function renderList() {
     row.className = 'lottery-row' + (isChecked ? ' checked' : '');
     row.innerHTML = `
       <div class="cb-wrap">
-        <input type="checkbox" name="lottery_type" value="${item.name}"${isChecked ? ' checked' : ''}>
+        <input type="checkbox" name="lottery_type" value="${item.time}|${item.name}"${isChecked ? ' checked' : ''}>
         <div class="cb-box">
           <svg width="9" height="7" viewBox="0 0 10 8" fill="none">
             <path d="M1 4l3 3 5-6" stroke="#0a0b0f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
