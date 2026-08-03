@@ -5,6 +5,7 @@ from copy import deepcopy
 from datetime import datetime, timedelta, timezone
 from functools import lru_cache
 from typing import Annotated
+from urllib.parse import quote
 
 from fastapi import Cookie, Depends, FastAPI, Form, HTTPException, Request, Response, status
 from fastapi.responses import HTMLResponse, RedirectResponse, StreamingResponse
@@ -189,20 +190,53 @@ async def lottery_generate(
     if not lottery_type:
         raise HTTPException(status_code=400, detail="กรุณาเลือกประเภทหวยอย่างน้อย 1 รายการ")
 
+    # --- 1. เตรียมข้อมูลและเรียงลำดับตามเวลาก่อน ---
+    parsed_items = []
+    for lt_data in lottery_type:
+        # แยกเวลาและชื่อหวย (เช่น "08:25" กับ "ลาว EXTRA")
+        time_str, name_str = lt_data.split("|", 1) if "|" in lt_data else ("", lt_data)
+        parsed_items.append({
+            "time": time_str, 
+            "name": name_str
+        })
+    
+    # เรียงลำดับจากเช้าไปดึก (ถ้าไม่มีเวลา กำหนดเป็น "99:99" เพื่อดันไปอยู่ท้ายสุด)
+    parsed_items.sort(key=lambda x: x["time"] if x["time"] else "99:99")
+
     # ─── ไฟล์เดียว: ส่งตรง ─────────────────────────────────────────────────
-    if len(lottery_type) == 1:
-        img_bytes = create_image_bytes(lottery_type[0])
+    if len(parsed_items) == 1:
+        item = parsed_items[0]
+        time_str = item["time"]
+        name_str = item["name"]
+        
+        filename = f"{time_str.replace(':', '.')}_{name_str}.jpg" if time_str else f"{name_str}.jpg"
+        encoded_filename = quote(filename)
+        
+        # นำ main1, main2 ออกจากฟังก์ชัน
+        img_bytes = create_image_bytes(name_str)
         return StreamingResponse(
             io.BytesIO(img_bytes),
             media_type="image/jpeg",
-            headers={"Content-Disposition": 'attachment; filename="lottery_result.jpg"'},
+            headers={"Content-Disposition": f"attachment; filename*=utf-8''{encoded_filename}"},
         )
 
     # ─── หลายไฟล์: ZIP ใน RAM ──────────────────────────────────────────────
     zip_buf = io.BytesIO()
     with zipfile.ZipFile(zip_buf, "w", zipfile.ZIP_DEFLATED) as zf:
-        for lt in lottery_type:
-            zf.writestr(f"{lt}.jpg", create_image_bytes(lt))
+        # ใช้ enumerate สร้างเลขลำดับ 1, 2, 3...
+        for index, item in enumerate(parsed_items, start=1):
+            time_str = item["time"]
+            name_str = item["name"]
+            
+            # --- 2. สร้างเลขลำดับ (01, 02, 03...) ไว้หน้าสุด ---
+            prefix = f"{index:02d}_" 
+            time_part = f"{time_str.replace(':', '.')}_" if time_str else ""
+            
+            # ประกอบชื่อไฟล์ (เช่น "01_08.25_ลาว EXTRA.jpg" หรือ "15_หวยรัฐบาล.jpg")
+            filename = f"{prefix}{time_part}{name_str}.jpg"
+            
+            # นำ main1, main2 ออกจากฟังก์ชัน
+            zf.writestr(filename, create_image_bytes(name_str))
     zip_buf.seek(0)
 
     return StreamingResponse(
