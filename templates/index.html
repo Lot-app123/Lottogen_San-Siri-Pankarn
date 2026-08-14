@@ -915,9 +915,9 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       
       if (val.length === 2) {
-        // กฎข้อ 1: ต้องระบุ รูด/เน้น หรือ รอง ก่อน
+        // กฎข้อ 1: ต้องระบุ วิ่ง หรือ รูด ก่อน
         if (!m1 && !m2) {
-          errors.push(`กรุณาระบุ "รูด/เน้น" หรือ "รอง" ก่อนพิมพ์เลขคู่ชุดที่ ${index + 1}`);
+          errors.push(`กรุณาระบุ "วิ่ง" หรือ "รูด" ก่อนพิมพ์เลขคู่ชุดที่ ${index + 1}`);
           input.style.borderColor = 'var(--red)';
           hasValidationError = true;
         } else {
@@ -925,7 +925,7 @@ document.addEventListener("DOMContentLoaded", () => {
           const hasMain1 = m1 && val.includes(m1);
           const hasMain2 = m2 && val.includes(m2);
           if (!hasMain1 && !hasMain2) {
-            errors.push(`เลขคู่ชุดที่ ${index + 1} (${val}) ต้องมีเลข รูด/เน้น หรือ รอง`);
+            errors.push(`เลขคู่ชุดที่ ${index + 1} (${val}) ต้องมีเลข วิ่ง หรือ รูด`);
             input.style.borderColor = 'var(--red)';
             hasValidationError = true;
           }
@@ -950,13 +950,13 @@ document.addEventListener("DOMContentLoaded", () => {
     if (wVal.length === 6) {
       // กฎข้อ 1: ต้องมี main1 และ main2 ครบ
       if (!m1 || !m2) {
-        errors.push(`กรุณาระบุทั้ง "รูด/เน้น" และ "รอง" ให้ครบก่อนพิมพ์เลขวิน`);
+        errors.push(`กรุณาระบุทั้ง "วิ่ง" และ "รูด" ให้ครบก่อนพิมพ์เลขวิน`);
         winInput.style.borderColor = 'var(--red)';
         hasValidationError = true;
       } else {
         // กฎข้อ 2: เลขวินต้องมีตัวเลขของ main1 และ main2 ประกอบอยู่ด้วย
         if (!wVal.includes(m1) || !wVal.includes(m2)) {
-          errors.push(`เลขวินต้องมีทั้ง รูด/เน้น (${m1}) และ รอง (${m2}) รวมอยู่ด้วย`);
+          errors.push(`เลขวินต้องมีทั้ง วิ่ง (${m1}) และ รูด (${m2}) รวมอยู่ด้วย`);
           winInput.style.borderColor = 'var(--red)';
           hasValidationError = true;
         }
