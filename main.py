@@ -132,9 +132,6 @@ def create_image_bytes(
     else:
         num1, num2 = random.sample(range(10), 2)
 
-   #triple_num = f"{num1}{num1}{num1}"
-    #main_pair = f"{num2}{num2}{num2}"
-
     # 2. จัดการ เลขคู่ 4 ชุด (pairs_list)
     available_digits = [d for d in range(10) if d not in (num1, num2)]
     
@@ -259,7 +256,7 @@ async def lottery_generate(
             if main2 and main2 in p: valid = True
             
             if not valid:
-                raise HTTPException(status_code=400, detail=f"เลขคู่ชุดที่ {i} ({p}) ต้องมีเลข วิ่ง หรือ รูด อย่างน้อย 1 ตัว")
+                raise HTTPException(status_code=400, detail=f"เลขเจาะชุดที่ {i} ({p}) ต้องมีเลข วิ่ง หรือ รูด อย่างน้อย 1 ตัว")
     
     if win_num and len(win_num) == 6:
         if not main1 or not main2:
