@@ -188,21 +188,25 @@ def create_image_bytes(
 
 # ─── Routes ──────────────────────────────────────────────────────────────────
 
+# 1. ตัวที่ทำให้เกิด Error 405 คือตัวนี้หายไป (สำหรับโหลดหน้าเว็บเข้าสู่ระบบ)
+@app.get("/login", response_class=HTMLResponse)
+async def login_page(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
+
+# 2. สำหรับกดปุ่มเข้าสู่ระบบ (เช็ครหัสผ่าน)
 @app.post("/login")
 async def login(
-    request: Request, # <-- ต้องรับ request เพื่อใช้กับ TemplateResponse
+    request: Request,
     username: str = Form(...),
     password: str = Form(...),
 ):
-    # ถ้าผู้ใช้หรือรหัสผ่านไม่ถูกต้อง ให้ส่งหน้าเดิมกลับไปพร้อมตัวแปร error
     if USERS.get(username) != password:
         return templates.TemplateResponse(
             "login.html", 
             {"request": request, "error": "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง"},
             status_code=400
         )
-        
-    # กรณีสำเร็จ ทำงานตามปกติ
+    
     response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
     response.set_cookie(
         key="access_token",
@@ -213,7 +217,7 @@ async def login(
     )
     return response
 
-
+# 3. สำหรับออกจากระบบ
 @app.get("/logout")
 async def logout():
     response = RedirectResponse(url="/login", status_code=status.HTTP_303_SEE_OTHER)
