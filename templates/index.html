@@ -499,7 +499,7 @@ header {
       <div class="image-tab active">ตัวอย่าง</div>
     </div>
     <div class="preview-content">
-      <img src="/static/Baan.png" class="preview-img" id="preview-img" style="display:block"
+      <img src="/static/Baan.jpg" class="preview-img" id="preview-img" style="display:block"
            onerror="this.style.display='none'; document.getElementById('preview-placeholder').style.display='flex'">
       <div class="preview-placeholder" id="preview-placeholder" style="display:none">
         <div class="ph-icon">
@@ -548,7 +548,7 @@ header {
 
           <!-- แถวที่ 2: เลขคู่ 6 ชุด -->
           <div class="input-group">
-            <label>เลขคู่ 6 ชุด (ชุดละ 2 ตัว)</label>
+            <label>เลขเจาะ 6 ชุด (ชุดละ 2 ตัว)</label>
             <div class="pairs-grid">
               <input type="text" name="pair1" maxlength="2" inputmode="numeric" placeholder="สุ่ม" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
               <input type="text" name="pair2" maxlength="2" inputmode="numeric" placeholder="สุ่ม" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
@@ -925,7 +925,7 @@ document.addEventListener("DOMContentLoaded", () => {
           const hasMain1 = m1 && val.includes(m1);
           const hasMain2 = m2 && val.includes(m2);
           if (!hasMain1 && !hasMain2) {
-            errors.push(`เลขคู่ชุดที่ ${index + 1} (${val}) ต้องมีเลข วิ่ง หรือ รูด`);
+            errors.push(`เลขเจาะชุดที่ ${index + 1} (${val}) ต้องมีเลข วิ่ง หรือ รูด`);
             input.style.borderColor = 'var(--red)';
             hasValidationError = true;
           }
@@ -933,7 +933,7 @@ document.addEventListener("DOMContentLoaded", () => {
         
         // กฎข้อ 3: แต่ละช่องห้ามซ้ำกัน
         if (seenPairs.has(val)) {
-          errors.push(`เลขคู่ (${val}) ซ้ำกัน กรุณาเปลี่ยนเลขใหม่`);
+          errors.push(`เลขเจาะ (${val}) ซ้ำกัน กรุณาเปลี่ยนเลขใหม่`);
           input.style.borderColor = 'var(--red)';
           hasValidationError = true;
         }
