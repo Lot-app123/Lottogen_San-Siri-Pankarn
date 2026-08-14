@@ -188,18 +188,21 @@ def create_image_bytes(
 
 # ─── Routes ──────────────────────────────────────────────────────────────────
 
-@app.get("/login", response_class=HTMLResponse)
-async def login_page(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
-
-
 @app.post("/login")
 async def login(
+    request: Request, # <-- ต้องรับ request เพื่อใช้กับ TemplateResponse
     username: str = Form(...),
     password: str = Form(...),
 ):
+    # ถ้าผู้ใช้หรือรหัสผ่านไม่ถูกต้อง ให้ส่งหน้าเดิมกลับไปพร้อมตัวแปร error
     if USERS.get(username) != password:
-        raise HTTPException(status_code=400, detail="ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง")
+        return templates.TemplateResponse(
+            "login.html", 
+            {"request": request, "error": "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง"},
+            status_code=400
+        )
+        
+    # กรณีสำเร็จ ทำงานตามปกติ
     response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
     response.set_cookie(
         key="access_token",
