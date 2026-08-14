@@ -917,7 +917,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (val.length === 2) {
         // กฎข้อ 1: ต้องระบุ วิ่ง หรือ รูด ก่อน
         if (!m1 && !m2) {
-          errors.push(`กรุณาระบุ "วิ่ง" หรือ "รูด" ก่อนพิมพ์เลขคู่ชุดที่ ${index + 1}`);
+          errors.push(`กรุณาระบุ "วิ่ง" หรือ "รูด" ก่อนพิมพ์เลขเจาะชุดที่ ${index + 1}`);
           input.style.borderColor = 'var(--red)';
           hasValidationError = true;
         } else {
