@@ -98,6 +98,140 @@ header {
 }
 .logout-btn:hover { color: var(--red); border-color: var(--red); background: rgba(255,77,106,.06); }
 
+/* ─── Number Inputs (Customizable) ────────────────────────────── */
+.custom-numbers-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 15px;
+  padding: 12px;
+  background: var(--surface-2);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.input-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.input-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.input-group label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted);
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+.input-group input {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--gold);
+  text-align: center;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input-group input:focus {
+  border-color: var(--gold-dim);
+  box-shadow: 0 0 0 2px var(--gold-glow);
+}
+
+.input-group input::placeholder {
+  color: var(--muted-2);
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.input-separator {
+  color: var(--muted-2);
+  font-size: 18px;
+  margin-top: 15px;
+}
+
+.pairs-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+/* ─── Toggle Inputs Button ────────────────────────────── */
+.toggle-inputs-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s, border-color 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.toggle-inputs-btn:hover {
+  background: var(--border);
+}
+
+.toggle-inputs-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gold);
+}
+
+.toggle-inputs-title svg {
+  width: 16px;
+  height: 16px;
+}
+
+.chevron-icon {
+  width: 18px;
+  height: 18px;
+  color: var(--muted);
+  transition: transform 0.3s ease, color 0.2s;
+}
+
+.toggle-inputs-btn.active .chevron-icon {
+  transform: rotate(180deg);
+  color: var(--gold);
+}
+
+/* Wrapper สำหรับทำแอนิเมชันเปิด/ปิด */
+.custom-numbers-wrapper {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease, opacity 0.3s ease;
+}
+
+.custom-numbers-wrapper.expanded {
+  max-height: 600px; /* กะเผื่อความสูงให้ครอบคลุม Input ทั้งหมด */
+  opacity: 1;
+}
+
+.custom-numbers-container {
+  margin-bottom: 15px; /* ย้าย margin มาอยู่ด้านใน */
+}
+
 /* ─── Layout (Desktop First) ─────────────────────────────────── */
 .app {
   display: grid;
@@ -386,6 +520,56 @@ header {
         <span class="panel-title">รายการหวย</span>
         <span class="selected-badge" id="selected-count">เลือก 0 / 0</span>
       </div>
+
+      <!-- ปุ่มเปิด/ปิด โซนกำหนดเลข -->
+      <div class="toggle-inputs-btn" id="toggle-inputs-btn">
+        <div class="toggle-inputs-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
+          กำหนดเลขเอง (ตัวเลือก)
+        </div>
+        <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+
+      <!-- โซนกำหนดเลขแบบละเอียด (ซ่อนอยู่โดยค่าเริ่มต้น) -->
+      <div class="custom-numbers-wrapper" id="custom-numbers-wrapper">
+        <div class="custom-numbers-container">
+          <!-- แถวที่ 1: รูด/เน้น และ รอง -->
+          <div class="input-row">
+            <div class="input-group">
+              <label>วิ่ง (1 ตัว)</label>
+              <input type="text" name="main1" maxlength="1" inputmode="numeric" placeholder="สุ่ม" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+            </div>
+            <div class="input-separator">-</div>
+            <div class="input-group">
+              <label>รูด (1 ตัว)</label>
+              <input type="text" name="main2" maxlength="1" inputmode="numeric" placeholder="สุ่ม" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+            </div>
+          </div>
+
+          <!-- แถวที่ 2: เลขคู่ 6 ชุด -->
+          <div class="input-group">
+            <label>เลขคู่ 6 ชุด (ชุดละ 2 ตัว)</label>
+            <div class="pairs-grid">
+              <input type="text" name="pair1" maxlength="2" inputmode="numeric" placeholder="สุ่ม" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+              <input type="text" name="pair2" maxlength="2" inputmode="numeric" placeholder="สุ่ม" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+              <input type="text" name="pair3" maxlength="2" inputmode="numeric" placeholder="สุ่ม" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+              <input type="text" name="pair4" maxlength="2" inputmode="numeric" placeholder="สุ่ม" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+              <input type="text" name="pair5" maxlength="2" inputmode="numeric" placeholder="สุ่ม" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+              <input type="text" name="pair6" maxlength="2" inputmode="numeric" placeholder="สุ่ม" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+            </div>
+          </div>
+
+          <!-- แถวที่ 3: เลขวิน -->
+          <div class="input-row">
+            <div class="input-group">
+              <label>เลขวิน (6 ตัว)</label>
+              <input type="text" name="win_num" maxlength="6" inputmode="numeric" placeholder="สุ่ม" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+            </div>
+        </div>
+        </div>
+      </div>
+      <!-- สิ้นสุดโซนกำหนดเลขแบบละเอียด -->
+
       <div class="search-wrap">
         <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
@@ -438,11 +622,15 @@ const SETS = [
   {
     label: 'SET 1',
     items: [
+      { name: 'ดาวโจนส์',            time: '04:00' },
+      { name: 'ดาวโจนส์ VIP',        time: '04:00' },
+      { name: 'ดาวโจนส์ STAR',       time: '04:30' },
       { name: 'ลาว EXTRA',          time: '08:25' },
       { name: 'นิเคอิเช้า VIP',      time: '09:00' },
       { name: 'ฮานอยอาเซียน',        time: '09:10' },
       { name: 'นิเคอิเช้า',          time: '09:25' },
       { name: 'จีนเช้า VIP',         time: '10:00' },
+      { name: 'ไทยเช้า',         time: '10:00' },
       { name: 'จีนเช้า',             time: '10:20' },
       { name: 'ลาว TV',              time: '10:25' },
       { name: 'ฮั่งเส็งเช้า VIP',    time: '10:30' },
@@ -452,6 +640,7 @@ const SETS = [
       { name: 'ลาวพิเศษรอบเที่ยง',   time: '11:30' },
       { name: 'ไต้หวัน',             time: '12:00' },
       { name: 'ฮานอยสตาร์',          time: '12:30' },
+      { name: 'ไทยเที่ยง',          time: '12:30' },
       { name: 'เกาหลี VIP',          time: '12:30' },
       { name: 'เกาหลี',              time: '13:00' },
       { name: 'นิเคอิบ่าย',          time: '13:30' },
@@ -459,6 +648,7 @@ const SETS = [
       { name: 'ลาว HD',              time: '14:00' },
       { name: 'จีนบ่าย',             time: '14:00' },
       { name: 'ฮานอย TV',            time: '14:30' },
+      { name: 'ไทยบ่าย',            time: '14:30' },
       { name: 'จีนบ่าย VIP',         time: '14:45' },
       { name: 'ฮั่งเส็งบ่าย',        time: '15:00' },
       { name: 'ฮั่งเส็งบ่าย VIP',    time: '15:00' },
@@ -468,6 +658,7 @@ const SETS = [
       { name: 'ฮานอยกาชาด',          time: '16:00' },
       { name: 'สิงคโปร์ VIP',        time: '16:30' },
       { name: 'ฮานอยพิเศษ',          time: '16:30' },
+      { name: 'ไทยเย็น',          time: '16:30' },
       { name: 'ฮานอยสามัคคี',        time: '17:00' },
       { name: 'อินเดีย',             time: '17:00' },
       { name: 'ฮานอยปกติ',           time: '18:00' },
@@ -489,10 +680,7 @@ const SETS = [
       { name: 'เยอรมัน',             time: '23:00' },
       { name: 'ลาวกาชาด',            time: '23:00' },
       { name: 'ยูโร',                time: '23:30' },
-      { name: 'รัสเซีย VIP',         time: '23:30' },
-      { name: 'ดาวโจนส์',            time: '04:00' },
-      { name: 'ดาวโจนส์ VIP',        time: '04:00' },
-      { name: 'ดาวโจนส์ STAR',       time: '04:30' },
+      { name: 'รัสเซีย VIP',         time: '23:30' }
     ]
   },
   {
@@ -543,7 +731,7 @@ const SETS = [
       { name: 'ฮานอยดึก',               time: '23:00' },
       { name: 'เยอรมัน VIP',             time: '22:30' },
       { name: 'ยูโร',                    time: '23:30' },
-      { name: 'หวยลาวกาขาด',             time: '23:00' },
+      { name: 'หวยลาวกาชาด',             time: '23:00' },
       { name: 'รัสเซีย VIP',             time: '23:30' },
     ]
   }
@@ -668,11 +856,140 @@ function toggleAll(checked) {
   renderList();
 }
 
-document.getElementById('main-form').addEventListener('submit', () => {
-  document.getElementById('loading').classList.add('show');
-  setTimeout(() => {
-    document.getElementById('loading').classList.remove('show');
-  }, 4000);
+// ─── ระบบเปิด/ปิด โซนกำหนดตัวเลข ───
+document.addEventListener("DOMContentLoaded", () => {
+  const toggleBtn = document.getElementById('toggle-inputs-btn');
+  const wrapper = document.getElementById('custom-numbers-wrapper');
+
+  toggleBtn.addEventListener('click', () => {
+    toggleBtn.classList.toggle('active');
+    wrapper.classList.toggle('expanded');
+  });
+});
+
+// ─── ระบบตรวจสอบตัวเลขแบบ Real-time (Frontend Validation) ───
+document.addEventListener("DOMContentLoaded", () => {
+  const main1Input = document.querySelector('input[name="main1"]');
+  const main2Input = document.querySelector('input[name="main2"]');
+  const pairInputs = [
+    document.querySelector('input[name="pair1"]'),
+    document.querySelector('input[name="pair2"]'),
+    document.querySelector('input[name="pair3"]'),
+    document.querySelector('input[name="pair4"]'),
+    document.querySelector('input[name="pair5"]'),
+    document.querySelector('input[name="pair6"]')
+  ];
+  const winInput = document.querySelector('input[name="win_num"]');
+  const form = document.getElementById('main-form');
+
+  // สร้างพื้นที่แสดงข้อความ Error สีแดง (แทรกไว้ใต้โซนกรอกเลข)
+  const errorMsgBox = document.createElement('div');
+  errorMsgBox.style.color = 'var(--red)';
+  errorMsgBox.style.fontSize = '12px';
+  errorMsgBox.style.fontWeight = '500';
+  errorMsgBox.style.textAlign = 'center';
+  errorMsgBox.style.minHeight = '18px';
+  errorMsgBox.style.marginTop = '6px';
+  errorMsgBox.style.transition = 'transform 0.2s';
+  document.querySelector('.custom-numbers-container').appendChild(errorMsgBox);
+
+  let hasValidationError = false;
+
+  function validateInputs() {
+    hasValidationError = false;
+    let errors = [];
+    const m1 = main1Input.value;
+    const m2 = main2Input.value;
+
+    // Reset สีขอบของช่องกรอกทั้งหมดกลับเป็นปกติก่อน
+    pairInputs.forEach(input => input.style.borderColor = '');
+    winInput.style.borderColor = '';
+
+    // 1. ตรวจสอบเลขคู่ 4 ชุด
+    let seenPairs = new Set();
+    pairInputs.forEach((input, index) => {
+      let val = input.value;
+      
+      if (val.length === 1) {
+        hasValidationError = true; // พิมพ์ยังไม่ครบ 2 ตัว (ระงับปุ่มไว้ก่อนแต่ยังไม่ด่า)
+      }
+      
+      if (val.length === 2) {
+        // กฎข้อ 1: ต้องระบุ รูด/เน้น หรือ รอง ก่อน
+        if (!m1 && !m2) {
+          errors.push(`กรุณาระบุ "รูด/เน้น" หรือ "รอง" ก่อนพิมพ์เลขคู่ชุดที่ ${index + 1}`);
+          input.style.borderColor = 'var(--red)';
+          hasValidationError = true;
+        } else {
+          // กฎข้อ 2: ต้องมีเลขจาก main1 หรือ main2 อย่างน้อย 1 ตัว
+          const hasMain1 = m1 && val.includes(m1);
+          const hasMain2 = m2 && val.includes(m2);
+          if (!hasMain1 && !hasMain2) {
+            errors.push(`เลขคู่ชุดที่ ${index + 1} (${val}) ต้องมีเลข รูด/เน้น หรือ รอง`);
+            input.style.borderColor = 'var(--red)';
+            hasValidationError = true;
+          }
+        }
+        
+        // กฎข้อ 3: แต่ละช่องห้ามซ้ำกัน
+        if (seenPairs.has(val)) {
+          errors.push(`เลขคู่ (${val}) ซ้ำกัน กรุณาเปลี่ยนเลขใหม่`);
+          input.style.borderColor = 'var(--red)';
+          hasValidationError = true;
+        }
+        seenPairs.add(val);
+      }
+    });
+
+    // 2. ตรวจสอบเลขวิน (random_6)
+    let wVal = winInput.value;
+    if (wVal.length > 0 && wVal.length < 6) {
+        hasValidationError = true;
+    }
+    
+    if (wVal.length === 6) {
+      // กฎข้อ 1: ต้องมี main1 และ main2 ครบ
+      if (!m1 || !m2) {
+        errors.push(`กรุณาระบุทั้ง "รูด/เน้น" และ "รอง" ให้ครบก่อนพิมพ์เลขวิน`);
+        winInput.style.borderColor = 'var(--red)';
+        hasValidationError = true;
+      } else {
+        // กฎข้อ 2: เลขวินต้องมีตัวเลขของ main1 และ main2 ประกอบอยู่ด้วย
+        if (!wVal.includes(m1) || !wVal.includes(m2)) {
+          errors.push(`เลขวินต้องมีทั้ง รูด/เน้น (${m1}) และ รอง (${m2}) รวมอยู่ด้วย`);
+          winInput.style.borderColor = 'var(--red)';
+          hasValidationError = true;
+        }
+      }
+    }
+
+    // อัปเดตข้อความแจ้งเตือน (แสดงข้อความ Error อันแรกที่ตรวจเจอ)
+    errorMsgBox.textContent = errors.length > 0 ? errors[0] : '';
+  }
+
+  // ผูก Event ให้ฟังก์ชันตรวจสอบทำงาน "ทุกครั้งที่พิมพ์" (Real-time)
+  [main1Input, main2Input, ...pairInputs, winInput].forEach(el => {
+     el.addEventListener('input', validateInputs);
+  });
+
+  // ดักจับ Event ตอนกดปุ่ม "สร้างรูปภาพ"
+  form.addEventListener('submit', function(e) {
+     validateInputs(); // เช็คซ้ำอีกรอบกันเหนียว
+     
+     if (hasValidationError) {
+        e.preventDefault(); // ยกเลิกการสร้างรูป
+        // ทำอนิเมชั่นเด้งดึ๋งที่ข้อความ Error เพื่อเรียกความสนใจ
+        errorMsgBox.style.transform = 'scale(1.05)';
+        setTimeout(() => errorMsgBox.style.transform = 'scale(1)', 150);
+        return;
+     }
+     
+     // ถ้าไม่มี Error ใดๆ ให้โชว์หน้าต่าง Loading และสร้างรูปปกติ
+     document.getElementById('loading').classList.add('show');
+     setTimeout(() => {
+       document.getElementById('loading').classList.remove('show');
+     }, 4000);
+  });
 });
 
 renderList();
